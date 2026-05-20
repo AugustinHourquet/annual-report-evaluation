@@ -1,0 +1,124 @@
+{
+  "filing": {
+    "form": "10-K",
+    "fiscal_year": 2024,
+    "period_end": "2024-09-28"
+  },
+  "periods": {
+    "c-1": { "type": "duration", "start": "2023-10-01", "end": "2024-09-28" },
+    "c-2": { "type": "instant", "date": "2024-09-28" }
+  },
+  "units": {
+    "usd": { "measure": "iso4217:USD" }
+  },
+  "facts": [
+    {
+      "concept":   "us-gaap:Revenues",
+      "value":     391035,
+      "unit":      "usd",
+      "period":    "c-1",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:CostOfGoodsAndServicesSold",
+      "value":     210352,
+      "unit":      "usd",
+      "period":    "c-1",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:GrossProfit",
+      "value":     180683,
+      "unit":      "usd",
+      "period":    "c-1",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:ResearchAndDevelopmentExpense",
+      "value":     31370,
+      "unit":      "usd",
+      "period":    "c-1",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:NetIncomeLoss",
+      "value":     93736,
+      "unit":      "usd",
+      "period":    "c-1",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:Assets",
+      "value":     364980,
+      "unit":      "usd",
+      "period":    "c-2",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+      "value":     29943,
+      "unit":      "usd",
+      "period":    "c-2",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:Liabilities",
+      "value":     308030,
+      "unit":      "usd",
+      "period":    "c-2",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:OperatingLeaseRightOfUseAsset",
+      "value":     8500,
+      "unit":      "usd",
+      "period":    "c-2",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+      "value":     118254,
+      "unit":      "usd",
+      "period":    "c-1",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:PropertyPlantAndEquipmentNet",
+      "value":     45680,
+      "unit":      "usd",
+      "period":    "c-2",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": {}
+    },
+    {
+      "concept":   "us-gaap:PropertyPlantAndEquipmentGross",
+      "value":     7000,
+      "unit":      "usd",
+      "period":    "c-2",
+      "decimals":  "-6",
+      "scale":     "6",
+      "dimensions": { "us-gaap:PropertyPlantAndEquipmentByTypeAxis": "us-gaap:LandMember" }
+    }
+  ]
+}

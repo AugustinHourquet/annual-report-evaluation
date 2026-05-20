@@ -1,0 +1,11 @@
+{
+  "us-gaap:CashAndCashEquivalentsAtCarryingValue": {
+    "label": "Cash and cash equivalents",
+    "totalLabel": "Total cash and cash equivalents"
+  },
+  "us-gaap:Assets": {
+    "label": "Assets",
+    "totalLabel": "Total assets"
+  },
+  "us-gaap:OperatingLeaseRightOfUseAsset": "Operating lease right-of-use assets"
+}

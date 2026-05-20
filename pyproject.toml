@@ -1,0 +1,106 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "annual-report-evaluation"
+version = "0.1.0"
+description = "Evaluate an LLM-based PDF extraction pipeline against XBRL ground truth for annual reports."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Annual Report Evaluation contributors" },
+]
+keywords = ["xbrl", "financial-statements", "llm-evaluation", "pdf-extraction"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Financial and Insurance Industry",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+  "pydantic>=2.0",
+  "rich",
+]
+
+[project.optional-dependencies]
+# Upstream extraction packages — install these only when you want to
+# (re)generate the input JSONs from PDFs or XBRL filings. The evaluation
+# layer itself never imports them; it consumes their JSON output.
+# They are NOT on PyPI, so you must point pip at local editable sources,
+# e.g.  pip install -e "../pdf-extraction[anthropic]" -e "../xbrl-extraction"
+upstream = [
+  "pdf-extraction",
+  "xbrl-extraction",
+]
+dev = [
+  "pytest>=7",
+  "pytest-cov>=4",
+  "black>=24",
+  "ruff>=0.4",
+  "pre-commit>=3",
+]
+
+[project.scripts]
+evaluate-report = "annual_report_evaluation.cli:main"
+
+[project.urls]
+"Homepage" = "https://github.com/your-org/annual-report-evaluation"
+"Issues"   = "https://github.com/your-org/annual-report-evaluation/issues"
+
+# --------------------------------------------------------------------------
+# setuptools — src/ layout
+# --------------------------------------------------------------------------
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# --------------------------------------------------------------------------
+# black
+# --------------------------------------------------------------------------
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+include = '\.pyi?$'
+
+# --------------------------------------------------------------------------
+# ruff
+# --------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+  "E", "F", "W", "I",       # pyflakes, pycodestyle, isort
+  "B",                      # bugbear
+  "UP",                     # pyupgrade
+  "N",                      # pep8-naming
+  "RUF",                    # ruff-specific
+]
+ignore = [
+  "E501",   # line length is handled by black
+  "N818",   # private internal exceptions named _SkipFact are fine
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 25
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["N802", "N803"]  # allow snake_case test names with arbitrary capitalisation
+
+# --------------------------------------------------------------------------
+# pytest
+# --------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = ["-ra", "--strict-markers"]
+testpaths = ["tests"]
+filterwarnings = ["error::DeprecationWarning"]
