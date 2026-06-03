@@ -60,17 +60,20 @@ def load_xbrl_facts(path: str | Path, labs_path: str | Path | None = None) -> XB
     if not path.exists():
         raise FileNotFoundError(f"XBRL facts file not found: {path}")
 
-    with path.open("r", encoding="utf-8") as f:
+    with path.open("r", encoding="utf-8-sig") as f:
         payload: dict[str, Any] = json.load(f)
 
-    filing = payload.get("filing") or {}
-    periods = payload.get("periods") or {}
-    raw_facts = payload.get("facts") or []
+    # Support both the legacy flat format and the new aggregated format where
+    # facts/periods/filing are nested under a top-level "facts" key.
+    facts_block = payload.get("facts") if isinstance(payload.get("facts"), dict) else payload
+    filing = facts_block.get("filing") or {}
+    periods = facts_block.get("periods") or {}
+    raw_facts = facts_block.get("facts") or []
 
     if "fiscal_year" not in filing or "period_end" not in filing:
         raise ValueError(f"XBRL JSON missing required filing.fiscal_year/period_end: {path}")
 
-    labels = _resolve_labels(path, labs_path)
+    labels = _resolve_labels(path, labs_path, inline_labs=payload.get("labs"))
 
     in_scope: list[FinancialFact] = []
     n_dim = 0
@@ -152,10 +155,23 @@ class _SkipFact(Exception):
     """Raised internally to drop a malformed XBRL fact."""
 
 
-def _resolve_labels(facts_path: Path, labs_path: str | Path | None) -> dict[str, list[str]]:
-    """Find labs.json next to the facts file (or use the explicit path), if any."""
+def _resolve_labels(
+    facts_path: Path,
+    labs_path: str | Path | None,
+    inline_labs: Any = None,
+) -> dict[str, list[str]]:
+    """Find labels from inline data, an explicit path, or a sibling file."""
     if labs_path is not None:
         return load_labels(labs_path)
+
+    # New aggregated format: labs embedded directly in the JSON.
+    if isinstance(inline_labs, dict) and inline_labs:
+        out: dict[str, list[str]] = {}
+        for concept, value in inline_labs.items():
+            variants = _extract_all_labels(value)
+            if variants:
+                out[concept] = variants
+        return out
 
     candidate = facts_path.parent / "labs.json"
     if candidate.exists():

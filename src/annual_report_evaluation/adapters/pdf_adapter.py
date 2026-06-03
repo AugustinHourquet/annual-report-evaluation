@@ -55,7 +55,7 @@ def load_pdf_facts(path: str | Path) -> PDFExtractionInput:
     if not path.exists():
         raise FileNotFoundError(f"PDF facts file not found: {path}")
 
-    with path.open("r", encoding="utf-8") as f:
+    with path.open("r", encoding="utf-8-sig") as f:
         payload: dict[str, Any] = json.load(f)
 
     # ----- metadata -----

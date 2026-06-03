@@ -267,7 +267,7 @@ def _run_batch(
         return (0, 0)
 
     pdf_files = sorted(pdf_dir.glob("*.facts.json"))
-    xbrl_files = sorted(xbrl_dir.glob("*.facts.json"))
+    xbrl_files = sorted(xbrl_dir.glob("*.json"))
 
     pairs, unmatched = _auto_pair_files(pdf_files, xbrl_files)
 
@@ -358,17 +358,26 @@ def _auto_pair_files(
 def _read_meta(path: Path, *, kind: str) -> tuple[str | None, int] | None:
     """Read just enough JSON to get (ticker, fiscal_year). None on failure."""
     try:
-        with path.open("r", encoding="utf-8") as f:
+        with path.open("r", encoding="utf-8-sig") as f:
             payload = json.load(f)
     except Exception as e:
         logger.warning("Could not read %s: %s", path, e)
         return None
+    # XBRL aggregated format nests filing/entity under a top-level "facts" key.
+    if kind == "xbrl" and isinstance(payload.get("facts"), dict):
+        payload = payload["facts"]
     filing = payload.get("filing") or {}
     entity = payload.get("entity") or {}
     fy = filing.get("fiscal_year")
     if fy is None:
         logger.warning("No filing.fiscal_year in %s — skipping.", path)
         return None
+    # Prefer the shared filename prefix when both PDF and XBRL use the
+    # rawdata_us_XXXX_XXXX naming convention, so they pair even when one
+    # side has no ticker/CIK in its metadata.
+    prefix = _filename_prefix(path)
+    if prefix is not None:
+        return (prefix, int(fy))
     ticker = entity.get("ticker") or entity.get("cik")
     if ticker is None:
         ticker = _guess_ticker_from_filename(path)
@@ -389,6 +398,17 @@ def _guess_ticker_from_filename(path: Path) -> str | None:
     if stem.isalnum():
         return stem.upper()
     return None
+
+
+def _filename_prefix(path: Path) -> str | None:
+    """Extract a shared radical prefix for pairing by filename.
+
+    rawdata_us_1860_1860_10K_2025-11-10.facts.json  →  rawdata_us_1860_1860
+    rawdata_us_1860_1860_XBRL_2025-11-10.json       →  rawdata_us_1860_1860
+    """
+    import re
+    m = re.match(r"^(rawdata_us_\d+_\d+)", path.name)
+    return m.group(1) if m else None
 
 
 # --------------------------------------------------------------------------
